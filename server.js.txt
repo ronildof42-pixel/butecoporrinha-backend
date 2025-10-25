@@ -1,0 +1,23 @@
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+const authRoutes = require('./routes/auth');
+const tableRoutes = require('./routes/tables');
+const rankingRoutes = require('./routes/ranking');
+const socketHandler = require('./socket');
+
+const app = express();
+app.use(cors({ origin: '*' }));
+app.use(express.json());
+
+app.use('/api', authRoutes);
+app.use('/api', tableRoutes);
+app.use('/api', rankingRoutes);
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
+socketHandler(io);
+
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
